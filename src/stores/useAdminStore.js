@@ -33,6 +33,11 @@ const useAdminStore = create((set, get) => ({
   grantsLoading: false,
   grantsError: null,
 
+  demoRequests: [],
+  demoRequestsTotal: 0,
+  demoRequestsLoading: false,
+  demoRequestsError: null,
+
   reset: () =>
     set({
       users: [],
@@ -53,6 +58,10 @@ const useAdminStore = create((set, get) => ({
       grants: [],
       grantsLoading: false,
       grantsError: null,
+      demoRequests: [],
+      demoRequestsTotal: 0,
+      demoRequestsLoading: false,
+      demoRequestsError: null,
     }),
 
   // Members for datasource-grant pickers: role-filtered, with optional
@@ -216,6 +225,54 @@ const useAdminStore = create((set, get) => ({
     } catch (err) {
       set({ auditError: err.message, auditLoading: false })
       return null
+    }
+  },
+
+  fetchDemoRequests: async ({ status, limit = ADMIN_PAGE_SIZE, offset = 0 } = {}) => {
+    set({ demoRequestsLoading: true, demoRequestsError: null })
+    try {
+      const params = new URLSearchParams({ request_type: 'demo' })
+      if (status) params.set('status', status)
+      params.set('limit', String(limit))
+      params.set('offset', String(offset))
+      const res = await apiFetch(`/admin/access-requests?${params}`)
+      const data = await res.json()
+      if (!res.ok) throw apiError(data)
+      set({
+        demoRequests: data.items,
+        demoRequestsTotal: data.total,
+        demoRequestsLoading: false,
+      })
+      return { ok: true, data }
+    } catch (err) {
+      set({ demoRequestsError: err.message, demoRequestsLoading: false })
+      return { ok: false, error: err.message, code: err.code }
+    }
+  },
+
+  approveDemoRequest: async (requestId) => {
+    try {
+      const res = await apiFetch(`/admin/access-requests/${requestId}/approve`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) throw apiError(data)
+      return { ok: true, data }
+    } catch (err) {
+      return { ok: false, error: err.message, code: err.code }
+    }
+  },
+
+  dismissDemoRequest: async (requestId) => {
+    try {
+      const res = await apiFetch(`/admin/access-requests/${requestId}/dismiss`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) throw apiError(data)
+      return { ok: true, data }
+    } catch (err) {
+      return { ok: false, error: err.message, code: err.code }
     }
   },
 }))

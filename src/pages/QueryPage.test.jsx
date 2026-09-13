@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { http, HttpResponse } from 'msw'
@@ -314,6 +314,118 @@ describe('QueryPage retry after failure', () => {
       expect(submitSpy).toHaveBeenCalledWith('the previous successful question')
     } finally {
       useQueryStore.setState({ submitQuery: real })
+    }
+  })
+})
+
+describe('QueryPage empty query results', () => {
+  it('shows an explicit no-data message instead of pretending the SQL is an answer', () => {
+    useQueryStore.setState({
+      conversationId: 'conv-1',
+      turns: [
+        {
+          id: 'turn-1',
+          question: 'What is the monthly revenue trend?',
+          sql: 'SELECT 1',
+          rows: [],
+          rowCount: 0,
+          summary: null,
+          chartSpec: null,
+          kpis: null,
+          executionTime: 0.1,
+          noQuery: false,
+        },
+      ],
+    })
+    useDatasourceStore.setState({
+      datasources: [],
+      selectedDatasourceId: 'ds-1',
+      currentDatasource: null,
+    })
+    useAuthStore.setState({
+      user: null,
+      isAuthenticated: false,
+      guestQuota: null,
+      loading: false,
+      error: null,
+    })
+
+    try {
+      renderPage()
+      expect(
+        screen.getByText('No matching rows in this data source', {
+          selector: '.ant-alert-title',
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'The query completed successfully, but it did not return any rows for the selected period or filters. You can review the SQL below or try a broader date range.',
+          { selector: '.ant-alert-description' }
+        )
+      ).toBeInTheDocument()
+    } finally {
+      useQueryStore.getState().reset()
+      useDatasourceStore.getState().reset()
+      useAuthStore.setState({
+        user: null,
+        isAuthenticated: false,
+        guestQuota: null,
+        loading: true,
+        error: null,
+      })
+    }
+  })
+})
+
+describe('QueryPage duplicate submissions', () => {
+  it('ignores a duplicate key event while the live query is in flight', async () => {
+    const submitSpy = vi.fn(() => {
+      useQueryStore.setState({ loading: true })
+      return Promise.resolve()
+    })
+    const realSubmit = useQueryStore.getState().submitQuery
+
+    useQueryStore.setState({
+      conversationId: 'conv-1',
+      turns: [
+        {
+          id: 'turn-1',
+          question: 'the previous question',
+          summary: 'Answered',
+          sql: 'SELECT 1',
+          rows: [{ n: 1 }],
+          rowCount: 1,
+          noQuery: false,
+        },
+      ],
+      loading: false,
+      suggestStatus: 'ready',
+      submitQuery: submitSpy,
+    })
+    useDatasourceStore.setState({
+      datasources: [],
+      selectedDatasourceId: 'ds-1',
+      currentDatasource: null,
+    })
+    useAuthStore.setState({
+      user: null,
+      isAuthenticated: false,
+      guestQuota: null,
+      loading: false,
+      error: null,
+    })
+
+    try {
+      renderPage()
+      const input = screen.getByPlaceholderText('Ask a follow-up question')
+      await userEvent.type(input, 'the duplicate question')
+      fireEvent.keyDown(input, { key: 'Enter' })
+      fireEvent.keyDown(input, { key: 'Enter' })
+
+      expect(submitSpy).toHaveBeenCalledTimes(1)
+      expect(submitSpy).toHaveBeenCalledWith('the duplicate question')
+    } finally {
+      useQueryStore.setState({ submitQuery: realSubmit, loading: false })
     }
   })
 })

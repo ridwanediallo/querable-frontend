@@ -4,6 +4,7 @@ import {
   ArrowLeftOutlined,
   DatabaseOutlined,
   FileTextOutlined,
+  MailOutlined,
   TeamOutlined,
 } from '@ant-design/icons'
 import useAuthStore from '../../stores/useAuthStore'
@@ -12,6 +13,7 @@ import SidebarShell from './SidebarShell'
 const NAV_ITEMS = [
   { to: '/admin/users', label: 'Users', icon: <TeamOutlined /> },
   { to: '/admin/datasources', label: 'Datasource access', icon: <DatabaseOutlined /> },
+  { to: '/admin/demo-requests', label: 'Demo requests', icon: <MailOutlined /> },
   { to: '/admin/audit-log', label: 'Audit log', icon: <FileTextOutlined /> },
 ]
 

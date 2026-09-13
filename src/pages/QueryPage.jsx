@@ -14,6 +14,7 @@ import 'highlight.js/styles/github.css'
 import useQueryStore from '../stores/useQueryStore'
 import useDatasourceStore from '../stores/useDatasourceStore'
 import useAuthStore from '../stores/useAuthStore'
+import DemoRequestFunnel from '../components/features/DemoRequestModal'
 const ChartSpec = lazy(() => import('../components/features/ChartSpec'))
 import KpiCard from '../components/features/KpiCard'
 
@@ -125,6 +126,9 @@ function UserBubble({ turn }) {
 
 function ReportPanel({ turn }) {
   const hasData = Boolean(turn.rows && turn.rows.length > 0 && !turn.noQuery)
+  const hasEmptyResult = Boolean(
+    turn.sql && !turn.noQuery && (!turn.rows || turn.rows.length === 0)
+  )
   const [view, setView] = useState(() => {
     if (hasData) return 'data'
     if (turn.sql) return 'sql'
@@ -250,6 +254,16 @@ function ReportPanel({ turn }) {
       {renderChart()}
 
       {narrative && <p className="narrative">{narrative}</p>}
+
+      {hasEmptyResult && (
+        <Alert
+          type="info"
+          showIcon
+          className="empty-result-alert"
+          message="No matching rows in this data source"
+          description="The query completed successfully, but it did not return any rows for the selected period or filters. You can review the SQL below or try a broader date range."
+        />
+      )}
 
       {(turn.sql || (turn.rows && turn.rows.length > 0)) && (
         <>
@@ -424,7 +438,7 @@ function QueryPage() {
 
   const handleSubmit = () => {
     const q = localQuestion.trim()
-    if (!q || loading) return
+    if (!q || useQueryStore.getState().loading) return
     submitQuery(q)
     setLocalQuestion('')
   }
@@ -555,6 +569,7 @@ function QueryPage() {
       </div>
 
       <div className="composer">
+        <DemoRequestFunnel isGuest={isGuest} />
         <GuestQuotaBanner quota={isGuest ? guestQuota : null} />
         <div className="composer-inner">
           <textarea

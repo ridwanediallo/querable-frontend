@@ -220,6 +220,44 @@ describe('useQueryStore', () => {
       expect(state.loading).toBe(false)
       expect(state.stepsDone).toBe(0)
     })
+
+    it('ignores a duplicate submit while the first query is in flight', async () => {
+      let requestCount = 0
+      let releaseQuery = () => {}
+      server.use(
+        http.post('/api/v1/query', () => {
+          requestCount += 1
+          return new Promise((resolve) => {
+            releaseQuery = (payload) => resolve(HttpResponse.json(payload))
+          })
+        }),
+      )
+
+      const firstQuery = useQueryStore.getState().submitQuery('first')
+      await vi.waitFor(() => expect(requestCount).toBe(1))
+      const duplicateQuery = useQueryStore.getState().submitQuery('second')
+
+      expect(requestCount).toBe(1)
+      expect(useQueryStore.getState().loading).toBe(true)
+      await expect(duplicateQuery).resolves.toBeUndefined()
+
+      releaseQuery({
+        summary: 'ok',
+        chart_spec: null,
+        kpis: null,
+        sql: 'SELECT 1',
+        rows: [],
+        row_count: 0,
+        execution_time: 0.1,
+        no_query: false,
+        conversation_id: 'conv-1',
+        turn_id: 'turn-1',
+      })
+      await firstQuery
+
+      expect(requestCount).toBe(1)
+      expect(useQueryStore.getState().loading).toBe(false)
+    })
   })
 
   describe('fetchConversations', () => {

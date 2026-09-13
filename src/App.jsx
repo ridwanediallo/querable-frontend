@@ -14,6 +14,7 @@ const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 const UsersPage = lazy(() => import('./pages/UsersPage'))
 const AuditPage = lazy(() => import('./pages/AuditPage'))
+const DemoRequestsPage = lazy(() => import('./pages/DemoRequestsPage'))
 const AcceptInvitePage = lazy(() => import('./pages/AcceptInvitePage'))
 
 function AppShell({ authKey }) {
@@ -70,6 +71,7 @@ function App() {
           <Route index element={<Navigate to="/admin/users" replace />} />
           <Route path="users" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><UsersPage /></Suspense>} />
           <Route path="datasources" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><DatasourcePage /></Suspense>} />
+          <Route path="demo-requests" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><DemoRequestsPage /></Suspense>} />
           <Route path="audit-log" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><AuditPage /></Suspense>} />
         </Route>
         <Route element={<AppShell authKey={authKey} />}>

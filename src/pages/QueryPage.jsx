@@ -14,6 +14,7 @@ import 'highlight.js/styles/github.css'
 import useQueryStore from '../stores/useQueryStore'
 import useDatasourceStore from '../stores/useDatasourceStore'
 import useAuthStore from '../stores/useAuthStore'
+import DemoRequestFunnel from '../components/features/DemoRequestModal'
 const ChartSpec = lazy(() => import('../components/features/ChartSpec'))
 import KpiCard from '../components/features/KpiCard'
 
@@ -555,6 +556,7 @@ function QueryPage() {
       </div>
 
       <div className="composer">
+        <DemoRequestFunnel isGuest={isGuest} />
         <GuestQuotaBanner quota={isGuest ? guestQuota : null} />
         <div className="composer-inner">
           <textarea

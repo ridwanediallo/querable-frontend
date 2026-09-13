@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Button, Form, Input, Modal, Select, message } from 'antd'
-import { MailOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Modal, Select, Typography, message } from 'antd'
+import { CheckCircleOutlined, MailOutlined } from '@ant-design/icons'
 import useAdminStore from '../../stores/useAdminStore'
 import { friendlyError } from '../../errors'
-import InviteLink from './InviteLink'
+
+const { Text } = Typography
 
 function InviteUserModal({ open, onClose }) {
   const [form] = Form.useForm()
@@ -34,7 +35,7 @@ function InviteUserModal({ open, onClose }) {
 
   return (
     <Modal
-      title={inviteResult ? 'Invite created' : 'Invite user'}
+      title={inviteResult ? 'Invite sent' : 'Invite user'}
       open={open}
       onCancel={handleClose}
       footer={
@@ -49,7 +50,20 @@ function InviteUserModal({ open, onClose }) {
       destroyOnHidden
     >
       {inviteResult ? (
-        <InviteLink token={inviteResult.invite_token} email={inviteResult.user.email} />
+        <div style={{ textAlign: 'center', padding: '16px 0' }}>
+          <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a', marginBottom: 16 }} />
+          <div>
+            <Text>
+              An invite email has been sent to{' '}
+              <Text strong>{inviteResult.user.email}</Text>.
+            </Text>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <Text type="secondary">
+              They'll receive a link to set their password and sign in.
+            </Text>
+          </div>
+        </div>
       ) : (
         <Form
           form={form}

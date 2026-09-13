@@ -198,8 +198,7 @@ export const handlers = [
   }),
   http.post('/api/v1/auth/logout', () => HttpResponse.json({ ok: true })),
   http.post('/api/v1/auth/claim-guest', () => HttpResponse.json({ migrated: 0 })),
-  http.post('/api/v1/auth/forgot-password', async ({ request }) => {
-    const body = await request.json()
+  http.post('/api/v1/auth/forgot-password', async () => {
     return HttpResponse.json({ message: 'If an account exists, a reset link has been sent.', token: 'test-reset-token' })
   }),
   http.post('/api/v1/auth/reset-password', async ({ request }) => {

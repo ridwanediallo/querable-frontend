@@ -375,8 +375,18 @@ function GuestQuotaBanner({ quota }) {
           : `${remaining} guest quer${remaining === 1 ? 'y' : 'ies'} remaining this session.`}
       </span>
       {exhausted && (
-        <Button type="link" size="small" icon={<LoginOutlined />} onClick={() => navigate('/login')}>
-          Sign in to keep querying
+        <>
+          <Button type="link" size="small" icon={<LoginOutlined />} onClick={() => navigate('/login')}>
+            Sign in to keep querying
+          </Button>
+          <Button type="primary" size="small" onClick={() => navigate('/request-access')}>
+            Request access
+          </Button>
+        </>
+      )}
+      {!exhausted && (
+        <Button type="link" size="small" onClick={() => navigate('/request-access')}>
+          Request access
         </Button>
       )}
     </div>

@@ -34,6 +34,12 @@ function LoginPage() {
         <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
           Sign in to query your data sources
         </Text>
+        <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 13 }}>
+          New here?{' '}
+          <Button type="link" size="small" style={{ padding: 0 }} onClick={() => navigate('/request-access')}>
+            Request access
+          </Button>
+        </Text>
 
         {formError && (
           <Alert

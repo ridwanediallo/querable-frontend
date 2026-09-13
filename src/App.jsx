@@ -16,6 +16,7 @@ const UsersPage = lazy(() => import('./pages/UsersPage'))
 const AuditPage = lazy(() => import('./pages/AuditPage'))
 const DemoRequestsPage = lazy(() => import('./pages/DemoRequestsPage'))
 const AcceptInvitePage = lazy(() => import('./pages/AcceptInvitePage'))
+const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
 
 function AppShell({ authKey }) {
   const migratedCount = useAuthStore((s) => s.migratedCount)
@@ -65,6 +66,7 @@ function App() {
       <ErrorBoundary>
       <Routes>
         <Route path="/invite" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><AcceptInvitePage /></Suspense>} />
+        <Route path="/request-access" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><RequestAccessPage /></Suspense>} />
         <Route path="/forgot-password" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><ForgotPasswordPage /></Suspense>} />
         <Route path="/reset-password" element={<Suspense fallback={<div className="app-loading"><Spin size="large" /></div>}><ResetPasswordPage /></Suspense>} />
         <Route path="/admin" element={<AdminLayout key={authKey} />}>

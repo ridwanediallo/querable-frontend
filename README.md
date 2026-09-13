@@ -4,6 +4,8 @@ React 19 + Vite single-page application for **Queryable**, a CrewAI
 multi-agent text-to-SQL reporting system. Ask questions in plain English and
 get SQL-backed answers with a narrative, KPI cards, and charts.
 
+> **Live application:** [https://querable.io/](https://querable.io/)
+>
 > This is the **frontend** repository. The API it talks to lives in the
 > [querable-backend](https://github.com/ridwanediallo/querable-backend)
 > repository — see the [Related repositories](#related-repositories) section.
@@ -82,3 +84,8 @@ MSW intercepts `/api/v1/*`; register new endpoints in
 | Repo | Role |
 |------|------|
 | [querable-backend](https://github.com/ridwanediallo/querable-backend) | Flask API, CrewAI pipeline, and database tools this app talks to |
+
+## Task Board
+
+See the [Queryable project board](https://github.com/users/ridwanediallo/projects/6)
+for the full product backlog, sprint planning, and delivery status.

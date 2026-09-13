@@ -6,17 +6,6 @@ import DemoRequestsPage from './DemoRequestsPage'
 import useAuthStore from '../stores/useAuthStore'
 import { resetDemoRequestMocks } from '../test/mocks/handlers'
 
-const mockRequest = {
-  id: 'demo-1',
-  request_type: 'demo',
-  name: 'Ada Demo',
-  email: 'ada@example.com',
-  company: 'Ada Corp',
-  use_case: 'Evaluate self-service reporting.',
-  status: 'pending',
-  created_at: '2026-09-01T00:00:00Z',
-}
-
 describe('DemoRequestsPage', () => {
   beforeEach(() => {
     resetDemoRequestMocks()
@@ -44,11 +33,10 @@ describe('DemoRequestsPage', () => {
 
     await user.click(screen.getByRole('button', { name: /approve/i }))
 
-    expect(await screen.findByText(/share this one-time link/i)).toBeInTheDocument()
+    expect(await screen.findByText(/invite email has been sent/i)).toBeInTheDocument()
   })
 
   it('does not offer decision actions for non-pending requests', async () => {
-    const user = userEvent.setup()
     render(<DemoRequestsPage />)
     await screen.findByText('Ada Demo')
 

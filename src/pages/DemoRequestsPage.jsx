@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { Button, Card, Modal, Popconfirm, Segmented, Table, Tag, Typography } from 'antd'
 import {
   CheckOutlined,
+  CheckCircleOutlined,
   CloseOutlined,
   ReloadOutlined,
 } from '@ant-design/icons'
 import useAdminStore, { ADMIN_PAGE_SIZE } from '../stores/useAdminStore'
 import { friendlyError } from '../errors'
 import { relativeTime } from '../lib/relativeTime'
-import InviteLink from '../components/features/InviteLink'
 
 const { Text } = Typography
 
@@ -28,7 +28,7 @@ function DemoRequestsPage() {
     dismissDemoRequest,
   } = useAdminStore()
 
-  const [status, setStatus] = useState('pending')
+  const [status] = useState('pending')
   const [page, setPage] = useState(1)
   const [showInvite, setShowInvite] = useState(null)
 
@@ -56,15 +56,13 @@ function DemoRequestsPage() {
       return
     }
 
-    if (result.data.invite_token) {
-      setShowInvite({ email: request.email, token: result.data.invite_token })
-    } else {
+    if (result.data.note) {
       Modal.success({
         title: 'Demo request approved',
-        content:
-          result.data.note ||
-          `${request.email} was approved and can now be invited through Users.`,
+        content: result.data.note,
       })
+    } else {
+      setShowInvite({ email: request.email })
     }
     load(page, status)
   }
@@ -201,8 +199,23 @@ function DemoRequestsPage() {
         />
       </Card>
 
-      <Modal open={Boolean(showInvite)} footer={null} onCancel={() => setShowInvite(null)} title="Invite created">
-        {showInvite && <InviteLink token={showInvite.token} email={showInvite.email} />}
+      <Modal open={Boolean(showInvite)} footer={null} onCancel={() => setShowInvite(null)} title="Invite sent">
+        {showInvite && (
+          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+            <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a', marginBottom: 16 }} />
+            <div>
+              <Text>
+                An invite email has been sent to{' '}
+                <Text strong>{showInvite.email}</Text>.
+              </Text>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <Text type="secondary">
+                They'll receive a link to set their password and sign in.
+              </Text>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   )

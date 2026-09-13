@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DemoRequestFunnel from './DemoRequestModal'
 import useAuthStore from '../../stores/useAuthStore'
-import * as api from '../../api'
 
 vi.mock('../../api', async (importOriginal) => {
   const orig = await importOriginal()

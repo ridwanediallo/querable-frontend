@@ -88,6 +88,28 @@ const conversations = [
   },
 ]
 
+const buildDemoRequests = () => [
+  {
+    id: 'demo-1',
+    request_type: 'demo',
+    name: 'Ada Demo',
+    email: 'ada@example.com',
+    company: 'Ada Corp',
+    use_case: 'Evaluate self-service reporting for our delivery data.',
+    status: 'pending',
+    created_at: '2026-09-01T00:00:00Z',
+    decided_at: null,
+    decided_by: null,
+    created_user_id: null,
+  },
+]
+
+let demoRequests = buildDemoRequests()
+
+export function resetDemoRequestMocks() {
+  demoRequests = buildDemoRequests()
+}
+
 const turns = [
   {
     id: 'turn-1',
@@ -186,6 +208,55 @@ export const handlers = [
       return HttpResponse.json({ error: 'Token and new password are required', code: 'missing_fields' }, { status: 400 })
     }
     return HttpResponse.json({ message: 'Password has been reset. Please sign in.' })
+  }),
+  http.post('/api/v1/auth/request-demo', async ({ request }) => {
+    const body = await request.json()
+    if (!body.name || !body.email) {
+      return HttpResponse.json({ error: 'Name is required', code: 'missing_fields' }, { status: 400 })
+    }
+    return HttpResponse.json({ message: 'Request received. We’ll review it and get back to you.' })
+  }),
+
+  http.get('/api/v1/admin/access-requests', ({ request }) => {
+    const url = new URL(request.url)
+    const requestType = url.searchParams.get('request_type') || 'access'
+    const status = url.searchParams.get('status')
+    const limit = Number(url.searchParams.get('limit') || 50)
+    const offset = Number(url.searchParams.get('offset') || 0)
+    const items = demoRequests
+      .filter((req) => req.request_type === requestType)
+      .filter((req) => !status || req.status === status)
+      .slice(offset, offset + limit)
+    return HttpResponse.json({ total: demoRequests.length, limit, offset, items })
+  }),
+
+  http.post('/api/v1/admin/access-requests/:id/approve', ({ params }) => {
+    const item = demoRequests.find((req) => req.id === params.id)
+    if (!item) return HttpResponse.json({ error: 'Not found' }, { status: 404 })
+    if (item.status !== 'pending') {
+      return HttpResponse.json(
+        { error: 'This request was already decided', code: 'already_decided' },
+        { status: 409 },
+      )
+    }
+    item.status = 'approved'
+    return HttpResponse.json({
+      user: { id: 'u-user-3', email: item.email },
+      sample_granted: true,
+    })
+  }),
+
+  http.post('/api/v1/admin/access-requests/:id/dismiss', ({ params }) => {
+    const item = demoRequests.find((req) => req.id === params.id)
+    if (!item) return HttpResponse.json({ error: 'Not found' }, { status: 404 })
+    if (item.status !== 'pending') {
+      return HttpResponse.json(
+        { error: 'This request was already decided', code: 'already_decided' },
+        { status: 409 },
+      )
+    }
+    item.status = 'dismissed'
+    return HttpResponse.json(item)
   }),
 
   http.get('/api/v1/admin/users', ({ request }) => {

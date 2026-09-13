@@ -10,11 +10,10 @@ import {
   Typography,
   message,
 } from 'antd'
-import { MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import useAdminStore, { ADMIN_PAGE_SIZE } from '../stores/useAdminStore'
 import useAuthStore from '../stores/useAuthStore'
 import InviteUserModal from '../components/features/InviteUserModal'
-import InviteLink from '../components/features/InviteLink'
 import UserDetailDrawer from '../components/features/UserDetailDrawer'
 import { confirmDeactivate, confirmRevokeSession } from '../components/features/adminActions'
 import { initials } from '../initials'
@@ -81,11 +80,24 @@ function UsersPage() {
       message.error(friendlyError(result))
       return
     }
-    Modal.info({
-      title: 'New invite link',
+    Modal.success({
+      title: 'Invite sent',
       width: 480,
       content: (
-        <InviteLink token={result.data.invite_token} email={user.email} />
+        <div style={{ textAlign: 'center', padding: '16px 0' }}>
+          <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a', marginBottom: 16 }} />
+          <div>
+            <Text>
+              An invite email has been sent to{' '}
+              <Text strong>{user.email}</Text>.
+            </Text>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <Text type="secondary">
+              They'll receive a link to set their password and sign in.
+            </Text>
+          </div>
+        </div>
       ),
     })
   }

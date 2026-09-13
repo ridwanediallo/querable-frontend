@@ -49,6 +49,11 @@ const useQueryStore = create((set, get) => ({
   conversationsLoading: false,
 
   submitQuery: async (question) => {
+    // Rapid duplicate events can fire before React re-renders with the new
+    // loading value. The live store state is authoritative here: once a
+    // report is running, ignore further submits until it completes.
+    if (get().loading) return
+
     const { conversationId, _queryAbort } = get()
     const { selectedDatasourceId } = useDatasourceStore.getState()
 

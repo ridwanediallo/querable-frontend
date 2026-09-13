@@ -544,6 +544,21 @@ body {
   margin: 16px 0;
 }
 
+.empty-result-alert {
+  margin: 4px 0 14px;
+  border-radius: 10px;
+}
+
+.empty-result-alert {
+  margin: 4px 0 14px;
+  border-radius: 10px;
+}
+
+.empty-result-alert {
+  margin: 4px 0 14px;
+  border-radius: 10px;
+}
+
 /* View SQL / View data toggles */
 .report-toggles {
   display: flex;
